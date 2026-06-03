@@ -411,7 +411,7 @@ const THEMES = {
 
 const FONT         = "'DM Sans', -apple-system, system-ui, sans-serif";
 const FONT_DISPLAY = "'DM Serif Display', Georgia, ui-serif, serif"; // ← italic on RM numerals
-const YEARS = ["2025", "2026", "2027"];
+const YEARS = ["2025", "2026"];
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // ─────────────────────────────────────────────────────────────
@@ -493,7 +493,7 @@ const TRANS = {
     total_income:        "Total Income",
     total_relief:        "Total Relief",
     tax_estimate:        "Tax Estimate",
-    using_brackets:      "Using YA2025 brackets — YA2026+ rates not yet gazetted",
+    using_brackets:      "Using YA2025 brackets — YA2026 rates not yet gazetted",
     add_emp_income:      "Add Employment Income",
     employer:            "Employer",
     annual_gross:        "Annual gross income (RM)",
@@ -738,7 +738,7 @@ const TRANS = {
     total_income:        "Jumlah Pendapatan",
     total_relief:        "Jumlah Pelepasan",
     tax_estimate:        "Anggaran Cukai",
-    using_brackets:      "Menggunakan kadar YA2025 — kadar YA2026+ belum diwartakan",
+    using_brackets:      "Menggunakan kadar YA2025 — kadar YA2026 belum diwartakan",
     add_emp_income:      "Tambah Pendapatan Pekerjaan",
     employer:            "Majikan",
     annual_gross:        "Pendapatan kasar tahunan (RM)",
@@ -984,8 +984,7 @@ const CAT_ICON = {
 //   EPF contributions      → G17epf (cap RM4,000)
 //   Combined G17 cap       → RM7,000 (enforced in totalRelief calc)
 //
-// Note on G1 for YA2026/2027: auto:true removed — amounts unconfirmed
-//   by LHDN. Users confirm manually. YA2025 G1 remains auto.
+// Note on YA2026: these are the personal relief rules for Year of Assessment 2026.
 // ─────────────────────────────────────────────────────────────
 const REL = {
   "2025": [
@@ -1038,33 +1037,46 @@ const REL = {
   ],
 
   "2026": [
-    { id: "personal", name: "Individual", nameBM: "Individu", items: [
-      { id: "G1",  name: "Individual relief",   nameBM: "Pelepasan individu",   cap: 9000, desc: "Expected RM9,000 — add manually once LHDN confirms YA2026 rates", descBM: "Dijangka RM9,000 — tambah secara manual setelah LHDN mengesahkan kadar YA2026" },
-      { id: "G4",  name: "Disabled individual", nameBM: "Individu OKU",         cap: 8000, desc: "Increased for YA2026", descBM: "Ditingkatkan untuk YA2026" },
-      { id: "G14", name: "Spouse / Alimony",    nameBM: "Pasangan / Nafkah",    cap: 4000, desc: "Spouse with no income", descBM: "Pasangan tanpa pendapatan" },
+    { id: "personal", name: "Individual & Dependents", nameBM: "Individu & Tanggungan", items: [
+      { id: "G1",  name: "Individual relief",   nameBM: "Pelepasan individu",   cap: 9000, auto: true, desc: "Automatic RM9,000 for resident taxpayers", descBM: "Automatik RM9,000 untuk pembayar cukai pemastautin" },
+      { id: "G4",  name: "Disabled individual", nameBM: "Individu OKU",         cap: 7000, desc: "Additional relief for disabled individual", descBM: "Pelepasan tambahan untuk individu OKU" },
+      { id: "G14", name: "Spouse / Alimony",    nameBM: "Pasangan / Nafkah",    cap: 4000, desc: "Spouse with no income or alimony to former wife with agreement", descBM: "Pasangan tanpa pendapatan atau nafkah bekas isteri dengan perjanjian" },
+      { id: "G15", name: "Disabled spouse",     nameBM: "Pasangan OKU",         cap: 6000, desc: "Additional relief for disabled spouse", descBM: "Pelepasan tambahan untuk pasangan OKU" },
     ]},
-    { id: "lifestyle", name: "Lifestyle", nameBM: "Gaya Hidup", items: [
-      { id: "G9",  name: "Books, gadgets, internet", nameBM: "Buku, gajet, internet", cap: 2500, desc: "Same as YA2025", descBM: "Sama seperti YA2025" },
-      { id: "G10", name: "Sports & fitness",          nameBM: "Sukan & kecergasan",   cap: 1000, desc: "Equipment, gym membership, court rental, green fees, competition entry. EXCLUDES: club joining fees, sports clothing/shoes, buggy rental.", descBM: "Peralatan, keahlian gim, sewaan gelanggang, yuran padang golf, daftar pertandingan. TIDAK TERMASUK: yuran kemasukan kelab, pakaian/kasut sukan, sewaan basikal golf." },
-      { id: "VMY", name: "Visit Malaysia 2026",        nameBM: "Melawat Malaysia 2026", cap: 1000, desc: "NEW: Domestic tourism — hotel, attraction, tour packages", descBM: "BARU: Pelancongan domestik — hotel, tarikan, pakej pelancongan" },
+    { id: "medical", name: "Medical & Special Needs", nameBM: "Perubatan & Keperluan Khas", items: [
+      { id: "G6", name: "Serious disease / fertility / vaccination / dental", nameBM: "Penyakit serius / kesuburan / vaksinasi / pergigian", cap: 10000, desc: "Combined medical cap RM10,000. Includes serious disease, fertility for married couples, vaccination, COVID-19/diagnostic tests, mental health screening, self-test devices and dental treatment", descBM: "Had perubatan gabungan RM10,000. Termasuk penyakit serius, kesuburan pasangan berkahwin, vaksinasi, ujian COVID-19/diagnostik, saringan kesihatan mental, peranti ujian sendiri dan rawatan pergigian" },
+      { id: "G7", name: "Medical exam / diagnostic / self-test / mental health", nameBM: "Pemeriksaan / diagnostik / ujian sendiri / kesihatan mental", cap: 1000, desc: "RM1,000 sub-limit for complete medical examination, COVID-19/diagnostic tests, mental health screening and self-test medical devices", descBM: "Sub-had RM1,000 untuk pemeriksaan perubatan lengkap, ujian COVID-19/diagnostik, saringan kesihatan mental dan peranti ujian sendiri" },
+      { id: "G8", name: "Learning disability (child)", nameBM: "Ketidakupayaan pembelajaran (anak)", cap: 6000, desc: "RM6,000 sub-limit for children with autism, ADHD, GDD, intellectual disability, Down Syndrome or specific learning disabilities", descBM: "Sub-had RM6,000 untuk anak dengan autisme, ADHD, GDD, ketidakupayaan intelektual, Sindrom Down atau ketidakupayaan pembelajaran khusus" },
+      { id: "G2", name: "Parents medical", nameBM: "Perubatan ibu bapa", cap: 8000, desc: "Medical treatment, special needs, care expenses and complete medical examination with RM1,000 check-up sub-limit", descBM: "Rawatan perubatan, keperluan khas, penjagaan dan pemeriksaan perubatan lengkap dengan sub-had pemeriksaan RM1,000" },
+      { id: "G3", name: "Basic disability equipment", nameBM: "Peralatan asas OKU", cap: 6000, desc: "Basic supporting equipment for disabled self, spouse, child or parent", descBM: "Peralatan sokongan asas untuk diri sendiri, pasangan, anak atau ibu bapa OKU" },
     ]},
-    { id: "medical", name: "Medical", nameBM: "Perubatan", items: [
-      { id: "G6", name: "Medical (serious disease, fertility, vaccination, dental)", nameBM: "Perubatan (penyakit serius, kesuburan, vaksinasi, pergigian)", cap: 10000, desc: "Same structure as YA2025", descBM: "Struktur sama seperti YA2025" },
-      { id: "G2", name: "Parents medical",                                           nameBM: "Perubatan ibu bapa",                                         cap: 8000,  desc: "Medical, dental, nursing", descBM: "Perubatan, pergigian, penjagaan" },
+    { id: "lifestyle", name: "Lifestyle, Sports & Travel", nameBM: "Gaya Hidup, Sukan & Pelancongan", items: [
+      { id: "G9",  name: "Lifestyle", nameBM: "Gaya hidup", cap: 2500, desc: "Books, magazines, computer, smartphone, broadband and self skill-enhancement courses", descBM: "Buku, majalah, komputer, telefon pintar, jalur lebar dan kursus peningkatan kemahiran kendiri" },
+      { id: "G10", name: "Sports equipment & activities", nameBM: "Peralatan & aktiviti sukan", cap: 1000, desc: "Sports equipment, rental/entry fees for sports facilities, competition registration, gym membership and sports training fees", descBM: "Peralatan sukan, sewaan/kemasukan fasiliti sukan, pendaftaran pertandingan, keahlian gim dan yuran latihan sukan" },
+      { id: "VMY", name: "Local travel", nameBM: "Pelancongan tempatan", cap: 1000, desc: "Attraction tickets and cultural, artistic or performance event admission tickets", descBM: "Tiket tarikan dan tiket kemasukan acara kebudayaan, kesenian atau persembahan" },
+      { id: "G21", name: "EV charging / food waste disposers / CCTV", nameBM: "Pengecasan EV / pelupus sisa makanan / CCTV", cap: 2500, desc: "EV charging facilities including installation, rental, hire-purchase or subscription fees; food waste composting/disposal machines; CCTV systems", descBM: "Kemudahan pengecasan EV termasuk pemasangan, sewaan, sewa beli atau langganan; mesin kompos/pelupus sisa makanan; sistem CCTV" },
     ]},
-    { id: "insurance", name: "Insurance", nameBM: "Insurans", items: [
-      { id: "G17ins", name: "Life insurance / takaful",    nameBM: "Insurans hayat / takaful",       cap: 3000, desc: "Sub-limit within G17 combined RM7,000 cap (shared with EPF)", descBM: "Sub-had dalam had gabungan G17 RM7,000 (berkongsi dengan KWSP)" },
-      { id: "G17epf", name: "EPF contributions",           nameBM: "Caruman KWSP",                   cap: 4000, desc: "Sub-limit within G17 combined RM7,000 cap (shared with insurance)", descBM: "Sub-had dalam had gabungan G17 RM7,000 (berkongsi dengan insurans)" },
-      { id: "G18",    name: "PRS",                         nameBM: "PRS",                            cap: 3000, desc: "Private Retirement Scheme", descBM: "Skim Persaraan Swasta" },
-      { id: "G19",    name: "Education & medical insurance",nameBM: "Insurans pendidikan & perubatan",cap: 4000, desc: "Premiums", descBM: "Premium" },
-      { id: "G20",    name: "SOCSO / EIS",                  nameBM: "PERKESO / EIS",                  cap: 350,  desc: "Contributions", descBM: "Caruman" },
+    { id: "education", name: "Education & Savings", nameBM: "Pendidikan & Simpanan", items: [
+      { id: "G5",  name: "Education fees (self)", nameBM: "Yuran pendidikan (sendiri)", cap: 7000, desc: "Tertiary/postgraduate education fees. Personal upskilling/self-enhancement courses are capped at RM2,000 and extended to YA2026", descBM: "Yuran pendidikan tertiari/pascasiswazah. Kursus peningkatan kemahiran/peningkatan kendiri dihadkan kepada RM2,000 dan dilanjutkan ke YA2026" },
+      { id: "G13", name: "SSPN net savings", nameBM: "Simpanan SSPN bersih", cap: 8000, desc: "Net savings in the National Education Savings Scheme (SSPN) for child", descBM: "Simpanan bersih dalam Skim Simpanan Pendidikan Nasional (SSPN) untuk anak" },
     ]},
     { id: "children", name: "Children", nameBM: "Anak-anak", items: [
-      { id: "G16a", name: "Child under 18",  nameBM: "Kanak-kanak bawah 18", cap: 2000,  desc: "Per child",  descBM: "Setiap kanak-kanak", perUnit: true, unitName: "children" },
-      { id: "G16c", name: "Disabled child",  nameBM: "Kanak-kanak OKU",      cap: 10000, desc: "Increased",  descBM: "Ditingkatkan",       perUnit: true, unitName: "children" },
+      { id: "G16a", name: "Child below 18", nameBM: "Anak bawah 18", cap: 2000, desc: "RM2,000 per unmarried child below 18", descBM: "RM2,000 setiap anak tidak berkahwin bawah 18 tahun", perUnit: true, unitName: "children" },
+      { id: "G16b", name: "Child 18+ in full-time education", nameBM: "Anak 18+ pendidikan sepenuh masa", cap: 2000, desc: "RM2,000 per unmarried child aged 18 and above receiving full-time education", descBM: "RM2,000 setiap anak tidak berkahwin berumur 18 tahun ke atas yang menerima pendidikan sepenuh masa", perUnit: true, unitName: "children" },
+      { id: "G16d", name: "Child 18+ in higher education", nameBM: "Anak 18+ pendidikan tinggi", cap: 8000, desc: "RM8,000 per unmarried child aged 18 and above in diploma, bachelor's degree or higher", descBM: "RM8,000 setiap anak tidak berkahwin berumur 18 tahun ke atas dalam diploma, ijazah sarjana muda atau lebih tinggi", perUnit: true, unitName: "children" },
+      { id: "G16c", name: "Disabled child", nameBM: "Anak OKU", cap: 8000, desc: "RM8,000 for disabled child", descBM: "RM8,000 untuk anak OKU", perUnit: true, unitName: "children" },
+      { id: "G11",  name: "Breastfeeding equipment", nameBM: "Peralatan penyusuan", cap: 1000, desc: "For working female taxpayers with child below 2 years old. Claimable once every 2 years", descBM: "Untuk pembayar cukai wanita bekerja dengan anak bawah 2 tahun. Boleh dituntut sekali setiap 2 tahun" },
+      { id: "G12",  name: "Childcare / preschool education fees", nameBM: "Yuran taska / pendidikan prasekolah", cap: 3000, desc: "Registered childcare centre or kindergarten fees for children below 12 years old", descBM: "Yuran pusat jagaan kanak-kanak atau tadika berdaftar untuk kanak-kanak bawah 12 tahun" },
+    ]},
+    { id: "insurance", name: "Insurance & Contributions", nameBM: "Insurans & Caruman", items: [
+      { id: "G17ins", name: "Life insurance / takaful", nameBM: "Insurans hayat / takaful", cap: 3000, desc: "Life insurance or takaful premiums. Sub-limit within Life Insurance/EPF combined relief", descBM: "Premium insurans hayat atau takaful. Sub-had dalam pelepasan gabungan Insurans Hayat/KWSP" },
+      { id: "G17epf", name: "EPF contributions", nameBM: "Caruman KWSP", cap: 4000, desc: "EPF contributions", descBM: "Caruman KWSP" },
+      { id: "G19",    name: "Education or medical insurance", nameBM: "Insurans pendidikan atau perubatan", cap: 4000, desc: "Insurance premium for education or medical benefits", descBM: "Premium insurans untuk manfaat pendidikan atau perubatan" },
+      { id: "G20",    name: "SOCSO / EIS", nameBM: "PERKESO / EIS", cap: 350, desc: "SOCSO and Employment Insurance System contributions", descBM: "Caruman PERKESO dan Sistem Insurans Pekerjaan" },
+      { id: "G18",    name: "PRS / Deferred annuity", nameBM: "PRS / Anuiti tertangguh", cap: 3000, desc: "Private Retirement Scheme contributions and deferred annuity scheme premiums", descBM: "Caruman Skim Persaraan Swasta dan premium skim anuiti tertangguh" },
     ]},
     { id: "housing", name: "Housing", nameBM: "Perumahan", items: [
-      { id: "G22", name: "Housing loan interest", nameBM: "Faedah pinjaman perumahan", cap: 7000, desc: "First-time buyer", descBM: "Pembeli rumah pertama" },
+      { id: "G22", name: "Housing loan interest (first-time homeowners)", nameBM: "Faedah pinjaman perumahan (pembeli rumah pertama)", cap: 7000, desc: "RM7,000 if house price is RM500,000 or below; RM5,000 if above RM500,000 to RM750,000", descBM: "RM7,000 jika harga rumah RM500,000 atau kurang; RM5,000 jika melebihi RM500,000 hingga RM750,000" },
     ]},
     { id: "rental", name: "Rental Income & Expenses", nameBM: "Pendapatan & Perbelanjaan Sewa", items: [
       { id: "R1", name: "Rental expenses — repairs & maintenance",   nameBM: "Perbelanjaan sewa — pembaikan & penyelenggaraan",   cap: 999999, desc: "Deductible: repairs and maintenance", descBM: "Boleh ditolak: pembaikan dan penyelenggaraan" },
@@ -1075,32 +1087,10 @@ const REL = {
     ]},
   ],
 
-  "2027": [
-    { id: "personal", name: "Individual", nameBM: "Individu", items: [
-      { id: "G1",  name: "Individual relief", nameBM: "Pelepasan individu", cap: 9000, desc: "Expected RM9,000 — add manually once LHDN confirms YA2027 rates", descBM: "Dijangka RM9,000 — tambah secara manual setelah LHDN mengesahkan kadar YA2027" },
-      { id: "G14", name: "Spouse / Alimony",  nameBM: "Pasangan / Nafkah", cap: 4000, desc: "Spouse with no income", descBM: "Pasangan tanpa pendapatan" },
-    ]},
-    { id: "lifestyle", name: "Lifestyle", nameBM: "Gaya Hidup", items: [
-      { id: "G9",  name: "Books, gadgets, internet", nameBM: "Buku, gajet, internet", cap: 2500, desc: "Gadgets, internet", descBM: "Gajet, internet" },
-      { id: "G10", name: "Sports & fitness",          nameBM: "Sukan & kecergasan",   cap: 1000, desc: "Equipment, gym membership, court rental, competition entry. EXCLUDES: club joining fees, sports clothing/shoes, buggy rental.", descBM: "Peralatan, keahlian gim, sewaan gelanggang, daftar pertandingan. TIDAK TERMASUK: yuran kemasukan kelab, pakaian/kasut sukan, sewaan basikal golf." },
-    ]},
-    { id: "insurance", name: "Insurance", nameBM: "Insurans", items: [
-      { id: "G17ins", name: "Life insurance / takaful", nameBM: "Insurans hayat / takaful", cap: 3000, desc: "Sub-limit within G17 combined RM7,000 cap (shared with EPF)", descBM: "Sub-had dalam had gabungan G17 RM7,000 (berkongsi dengan KWSP)" },
-      { id: "G17epf", name: "EPF contributions",        nameBM: "Caruman KWSP",              cap: 4000, desc: "Sub-limit within G17 combined RM7,000 cap (shared with insurance)", descBM: "Sub-had dalam had gabungan G17 RM7,000 (berkongsi dengan insurans)" },
-      { id: "G20",    name: "SOCSO / EIS",               nameBM: "PERKESO / EIS",             cap: 350,  desc: "Contributions", descBM: "Caruman" },
-    ]},
-    { id: "rental", name: "Rental Income & Expenses", nameBM: "Pendapatan & Perbelanjaan Sewa", items: [
-      { id: "R1", name: "Rental expenses — repairs & maintenance",   nameBM: "Perbelanjaan sewa — pembaikan & penyelenggaraan",   cap: 999999, desc: "Deductible: repairs and maintenance", descBM: "Boleh ditolak: pembaikan dan penyelenggaraan" },
-      { id: "R2", name: "Rental expenses — quit rent & assessment",  nameBM: "Perbelanjaan sewa — cukai tanah & cukai pintu",      cap: 999999, desc: "Deductible: quit rent, assessment tax", descBM: "Boleh ditolak: cukai tanah, cukai pintu" },
-      { id: "R3", name: "Rental expenses — insurance premium",       nameBM: "Perbelanjaan sewa — premium insurans",              cap: 999999, desc: "Deductible: fire/building insurance", descBM: "Boleh ditolak: insurans kebakaran/bangunan" },
-      { id: "R4", name: "Rental expenses — management & agent fees", nameBM: "Perbelanjaan sewa — yuran pengurusan & ejen",       cap: 999999, desc: "Deductible: management fees, agent commission", descBM: "Boleh ditolak: yuran pengurusan, komisyen ejen" },
-      { id: "R5", name: "Rental expenses — loan interest",           nameBM: "Perbelanjaan sewa — faedah pinjaman",              cap: 999999, desc: "Deductible: loan interest on rental property", descBM: "Boleh ditolak: faedah pinjaman untuk hartanah sewa" },
-    ]},
-  ],
 };
 
 // ─────────────────────────────────────────────────────────────
-// TAX BRACKETS — YA2025 only. Flagged for YA2026/2027.
+// TAX BRACKETS — YA2025 only. Flagged for YA2026.
 // ─────────────────────────────────────────────────────────────
 const BK = [
   { max: 5000,     r: 0,  c: 0      },
@@ -1763,8 +1753,9 @@ export default function MakeCents() {
   };
 
   const groupRaw = (ids) => ids.reduce((s, id) => s + itemTotalRaw(id), 0);
+  const medicalLearningCap = allItems.find(i => i.id === "G8")?.cap || 6000;
   const groupCapped = {
-    med678: Math.min(Math.min(itemTotalRaw("G6"), 10000) + Math.min(itemTotalRaw("G7"), 1000) + Math.min(itemTotalRaw("G8"), 6000), 10000),
+    med678: Math.min(Math.min(itemTotalRaw("G6"), 10000) + Math.min(itemTotalRaw("G7"), 1000) + Math.min(itemTotalRaw("G8"), medicalLearningCap), 10000),
     g9: Math.min(groupRaw(["G9"]), 2500),
     g10: Math.min(groupRaw(["G10"]), 1000),
     g17: Math.min(Math.min(itemTotalRaw("G17ins"),3000) + Math.min(itemTotalRaw("G17epf"),4000), 7000),
@@ -1780,7 +1771,7 @@ export default function MakeCents() {
 
     if (id === "G6" || id === "G7" || id === "G8") {
       const g7Used = Math.min(itemTotalRaw("G7"), 1000);
-      const g8Used = Math.min(itemTotalRaw("G8"), 6000);
+      const g8Used = Math.min(itemTotalRaw("G8"), medicalLearningCap);
       if (id === "G7") return g7Used;
       if (id === "G8") return g8Used;
       return Math.min(itemTotalRaw("G6"), Math.max(0, 10000 - g7Used - g8Used));
@@ -1807,7 +1798,7 @@ export default function MakeCents() {
     return s + (i.auto ? i.cap : itemTotalCapped(i.id));
   }, 0) + g17Combined;
 
-  const eligibleCapTotal = 9000 + 8000 + 6000 + 10000 + 2500 + 1000 + 2500 + 7000 + 8000 + 4000 + 6000 + 7000 + 3000 + 4000 + 350 + 7000;
+  const eligibleCapTotal = allItems.reduce((s, i) => s + (i.id.startsWith("R") || i.cap >= 999999 ? 0 : i.cap), 0);
 
   const totalRentalIncome     = rentalIncomes.reduce((s, i) => s + (i.amount || 0), 0);
   const totalRentalExpenses   = ["R1","R2","R3","R4","R5"].reduce((s, id) => s + itemTotalRaw(id), 0);
@@ -3269,14 +3260,15 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
 
 
       {cats.map(cat => {
-        const fixedCaps = { personal: 26000, medical: 24000, lifestyle: 6000, insurance: 14350, education: 15000, housing: 7000 };
-        const medGroup = Math.min(Math.min(itemTotalRaw("G6"),10000) + Math.min(itemTotalRaw("G7"),1000) + Math.min(itemTotalRaw("G8"),6000), 10000);
+        const fixedCaps = { personal: 26000, medical: 24000, lifestyle: ya === "2026" ? 7000 : 6000, insurance: 14350, education: 15000, housing: 7000 };
+        const medLearningCap = cat.items.find(i => i.id === "G8")?.cap || 6000;
+        const medGroup = Math.min(Math.min(itemTotalRaw("G6"),10000) + Math.min(itemTotalRaw("G7"),1000) + Math.min(itemTotalRaw("G8"),medLearningCap), 10000);
         const claimed = cat.id === "medical"
           ? Math.min(itemTotalRaw("G2"),8000) + Math.min(itemTotalRaw("G3"),6000) + medGroup
           : cat.id === "insurance"
             ? Math.min(Math.min(itemTotalRaw("G17ins"),3000)+Math.min(itemTotalRaw("G17epf"),4000),7000) + Math.min(itemTotalRaw("G18"),3000)+Math.min(itemTotalRaw("G19"),4000)+Math.min(itemTotalRaw("G20"),350)
             : cat.id === "lifestyle"
-              ? Math.min(itemTotalRaw("G9"),2500)+Math.min(itemTotalRaw("G10"),1000)+Math.min(itemTotalRaw("G21"),2500)
+              ? Math.min(itemTotalRaw("G9"),2500)+Math.min(itemTotalRaw("G10"),1000)+Math.min(itemTotalRaw("VMY"),1000)+Math.min(itemTotalRaw("G21"),2500)
               : cat.items.reduce((s,i)=> s + (i.auto?i.cap:Math.min(itemTotalRaw(i.id), i.cap>=999999?itemTotalRaw(i.id):(i.perUnit ? i.cap * (itemEntries(i.id)[0]?.units || 1) : i.cap))),0);
         const cap = fixedCaps[cat.id] ?? cat.items.reduce((s,i)=> s + (i.cap>=999999?0:i.cap),0);
         const util = cap ? Math.round((claimed/cap)*100) : 0;
@@ -4262,7 +4254,7 @@ function EFilingSummaryModal({
     },
     {
       label: isBM ? "Yuran pendidikan (Diri sendiri)" : "Education fees (Self)",
-      amount: Math.min(itemTotalRaw("G11"), 7000),
+      amount: Math.min(itemTotalRaw("G5"), 7000),
     },
     {
       label: isBM ? "Perbelanjaan perubatan penyakit serius / rawatan kesuburan / vaksinasi / pergigian (G6+G7+G8)" : "Medical expenses — serious disease / fertility / vaccination / dental (G6+G7+G8)",
@@ -4280,8 +4272,32 @@ function EFilingSummaryModal({
       note: isBM ? "Had: RM1,000" : "Cap: RM1,000",
     },
     {
-      label: isBM ? "Yuran penjagaan kanak-kanak di pusat penjagaan berdaftar / tadika" : "Child care fees to a registered child care centre / kindergarten",
+      label: isBM ? "Yuran penjagaan kanak-kanak / pendidikan prasekolah" : "Childcare / preschool education fees",
       amount: Math.min(itemTotalRaw("G12"), 3000),
+    },
+    {
+      label: isBM ? "Peralatan penyusuan" : "Breastfeeding equipment",
+      amount: Math.min(itemTotalRaw("G11"), 1000),
+    },
+    {
+      label: isBM ? "Anak belum berkahwin bawah 18 tahun" : "Unmarried child below 18",
+      amount: Math.min(itemTotalRaw("G16a"), 2000),
+    },
+    {
+      label: isBM ? "Anak belum berkahwin 18+ dalam pendidikan sepenuh masa" : "Unmarried child 18+ in full-time education",
+      amount: Math.min(itemTotalRaw("G16b"), 2000),
+    },
+    {
+      label: isBM ? "Anak belum berkahwin 18+ dalam pendidikan tinggi" : "Unmarried child 18+ in higher education",
+      amount: Math.min(itemTotalRaw("G16d"), 8000),
+    },
+    {
+      label: isBM ? "Anak kurang upaya" : "Disabled child",
+      amount: Math.min(itemTotalRaw("G16c"), 8000),
+    },
+    {
+      label: isBM ? "Simpanan bersih SSPN" : "SSPN net savings",
+      amount: Math.min(itemTotalRaw("G13"), 8000),
     },
     {
       label: isBM ? "Suami / isteri / bayaran nafkah kepada bekas isteri" : "Husband / wife / payment of alimony to former wife",
@@ -4312,7 +4328,11 @@ function EFilingSummaryModal({
       amount: Math.min(itemTotalRaw("G20"), 350),
     },
     {
-      label: isBM ? "Kemudahan pengecasan kenderaan elektrik / mesin kompos sisa makanan" : "EV charging facility / food waste compost machine",
+      label: isBM ? "Pelancongan tempatan" : "Local travel",
+      amount: Math.min(itemTotalRaw("VMY"), 1000),
+    },
+    {
+      label: isBM ? "Kemudahan pengecasan EV / pelupus sisa makanan / CCTV" : "EV charging / food waste disposers / CCTV",
       amount: groupCapped.g21,
     },
     {
