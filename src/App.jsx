@@ -984,7 +984,8 @@ const CAT_ICON = {
 //   EPF contributions      → G17epf (cap RM4,000)
 //   Combined G17 cap       → RM7,000 (enforced in totalRelief calc)
 //
-// Note on YA2026: these are the personal relief rules for Year of Assessment 2026.
+// Note on YA2026: these are the personal relief rules for income year 2026,
+//   which taxpayers submit during the 2027 filing season.
 // ─────────────────────────────────────────────────────────────
 const REL = {
   "2025": [
@@ -1087,6 +1088,54 @@ const REL = {
     ]},
   ],
 
+  "2027": [
+    { id: "personal", name: "Individual & Dependents", nameBM: "Individu & Tanggungan", items: [
+      { id: "G1",  name: "Individual relief",   nameBM: "Pelepasan individu",   cap: 9000, auto: true, desc: "Automatic RM9,000 for resident taxpayers", descBM: "Automatik RM9,000 untuk pembayar cukai pemastautin" },
+      { id: "G4",  name: "Disabled individual", nameBM: "Individu OKU",         cap: 7000, desc: "Additional relief for DSW-certified disabled taxpayers", descBM: "Pelepasan tambahan untuk pembayar cukai OKU yang disahkan JKM" },
+      { id: "G14", name: "Spouse / Alimony",    nameBM: "Pasangan / Nafkah",    cap: 4000, desc: "Spouse with no income or formal alimony", descBM: "Pasangan tanpa pendapatan atau nafkah rasmi" },
+      { id: "G15", name: "Disabled spouse",     nameBM: "Pasangan OKU",         cap: 6000, desc: "Additional spouse relief when certified disabled by DSW", descBM: "Pelepasan tambahan pasangan jika disahkan OKU oleh JKM" },
+    ]},
+    { id: "medical", name: "Medical & Special Needs", nameBM: "Perubatan & Keperluan Khas", items: [
+      { id: "G6", name: "Serious disease / fertility / vaccination / dental", nameBM: "Penyakit serius / kesuburan / vaksinasi / pergigian", cap: 10000, desc: "G6 + G7 + G8 share a combined RM10,000 cap. Vaccination and dental sub-limits remain RM1k each", descBM: "G6 + G7 + G8 berkongsi had gabungan RM10,000. Sub-had vaksinasi dan pergigian kekal RM1k setiap satu" },
+      { id: "G7", name: "Medical exam / self-test / mental health",           nameBM: "Pemeriksaan perubatan / ujian sendiri / kesihatan mental", cap: 1000,  desc: "Check-up, screening, self-test devices and mental health. Sub-limit within G6+G7+G8 RM10k cap", descBM: "Pemeriksaan, saringan, peranti ujian sendiri dan kesihatan mental. Sub-had dalam G6+G7+G8 RM10k" },
+      { id: "G8", name: "Learning disability (child 18 and below)",           nameBM: "Ketidakupayaan pembelajaran (kanak-kanak 18 & ke bawah)", cap: 10000, desc: "Diagnosis, early intervention and rehabilitation; increased to RM10,000 from YA2026 within the combined medical cap", descBM: "Diagnosis, intervensi awal dan pemulihan; dinaikkan kepada RM10,000 mulai YA2026 dalam had perubatan gabungan" },
+      { id: "G2", name: "Parents / grandparents medical",                     nameBM: "Perubatan ibu bapa / datuk nenek",                       cap: 8000,  desc: "Medical, dental, nursing, carer. Check-up sub-limit RM1k", descBM: "Perubatan, pergigian, penjagaan. Sub-had pemeriksaan RM1k" },
+      { id: "G3", name: "Disabled equipment",                                 nameBM: "Peralatan OKU",                                         cap: 6000,  desc: "Basic supporting equipment for disabled self, spouse, child or parent", descBM: "Peralatan sokongan asas untuk diri sendiri, pasangan, anak atau ibu bapa OKU" },
+    ]},
+    { id: "lifestyle", name: "Lifestyle", nameBM: "Gaya Hidup", items: [
+      { id: "G9",  name: "Books, gadgets, internet, courses", nameBM: "Buku, gajet, internet, kursus", cap: 2500, desc: "Reading materials, smartphone/tablet/PC, internet bills and self-enhancement courses", descBM: "Bahan bacaan, telefon pintar/tablet/PC, bil internet dan kursus peningkatan kendiri" },
+      { id: "G10", name: "Sports & fitness",                  nameBM: "Sukan & kecergasan",            cap: 1000, desc: "Equipment, gym membership, court rental, green fees, swimming, martial arts, yoga, competition entry. EXCLUDES: club joining fees, sports clothing/shoes, buggy rental.", descBM: "Peralatan, keahlian gim, sewaan gelanggang, yuran padang golf, renang, seni mempertahankan diri, yoga, daftar pertandingan. TIDAK TERMASUK: yuran kemasukan kelab, pakaian/kasut sukan, sewaan basikal golf." },
+      { id: "G21", name: "EV charging / composting / grinder / CCTV", nameBM: "Pengecasan EV / kompos / pengisar / CCTV", cap: 2500, desc: "EV charging, food waste composting machine, household food waste grinder or home CCTV/security system; YA2026–2027 scope", descBM: "Pengecas EV, mesin kompos sisa makanan, pengisar sisa makanan isi rumah atau CCTV/sistem keselamatan rumah; skop YA2026–2027" },
+    ]},
+    { id: "insurance", name: "Insurance & Contributions", nameBM: "Insurans & Caruman", items: [
+      { id: "G17ins", name: "Life insurance / takaful",     nameBM: "Insurans hayat / takaful",       cap: 3000, desc: "Life insurance or takaful premiums for self, spouse or child. Sub-limit within G17 combined RM7,000 cap", descBM: "Premium insurans hayat atau takaful untuk diri sendiri, pasangan atau anak. Sub-had dalam had gabungan G17 RM7,000" },
+      { id: "G17epf", name: "EPF contributions",            nameBM: "Caruman KWSP",                   cap: 4000, desc: "Mandatory or voluntary EPF contributions. Sub-limit within G17 combined RM7,000 cap", descBM: "Caruman KWSP wajib atau sukarela. Sub-had dalam had gabungan G17 RM7,000" },
+      { id: "G18",    name: "PRS / Deferred annuity",       nameBM: "PRS / Anuiti tertangguh",        cap: 3000, desc: "Private Retirement Scheme and deferred annuity relief available until YA2030", descBM: "Pelepasan Skim Persaraan Swasta dan anuiti tertangguh tersedia sehingga YA2030" },
+      { id: "G19",    name: "Education & medical insurance",nameBM: "Insurans pendidikan & perubatan",cap: 4000, desc: "Education or medical insurance premiums for self, spouse or child", descBM: "Premium insurans pendidikan atau perubatan untuk diri sendiri, pasangan atau anak" },
+      { id: "G20",    name: "SOCSO / EIS",                  nameBM: "PERKESO / EIS",                  cap: 350,  desc: "Employee SOCSO and Employment Insurance System contributions", descBM: "Caruman PERKESO pekerja dan Sistem Insurans Pekerjaan" },
+    ]},
+    { id: "education", name: "Education & Savings", nameBM: "Pendidikan & Simpanan", items: [
+      { id: "G5",  name: "Education fees (self)", nameBM: "Yuran pendidikan (sendiri)", cap: 7000, desc: "Master's/Doctorate in any field, or qualifying professional/technical/vocational/scientific/technology courses", descBM: "Sarjana/Doktor Falsafah dalam apa-apa bidang, atau kursus profesional/teknikal/vokasional/saintifik/teknologi yang layak" },
+      { id: "G13", name: "SSPN net savings",      nameBM: "Simpanan SSPN bersih",       cap: 8000, desc: "Net deposits minus withdrawals; relief extended until YA2027", descBM: "Deposit bersih tolak pengeluaran; pelepasan dilanjutkan sehingga YA2027" },
+    ]},
+    { id: "children", name: "Children", nameBM: "Anak-anak", items: [
+      { id: "G16a", name: "Child under 18",           nameBM: "Kanak-kanak bawah 18",             cap: 2000, desc: "RM2,000 per unmarried child", descBM: "RM2,000 setiap anak yang tidak berkahwin", perUnit: true, unitName: "children" },
+      { id: "G16b", name: "Child 18+ in education",   nameBM: "Anak 18+ dalam pendidikan",        cap: 8000, desc: "RM2,000 or RM8,000 per unmarried child depending on education level", descBM: "RM2,000 atau RM8,000 setiap anak tidak berkahwin mengikut tahap pendidikan", perUnit: true, unitName: "children" },
+      { id: "G16c", name: "Disabled child",           nameBM: "Anak OKU",                         cap: 16000, desc: "RM8,000 base relief, plus RM8,000 more if the child is in qualifying higher education", descBM: "Pelepasan asas RM8,000, tambahan RM8,000 jika anak dalam pendidikan tinggi yang layak", perUnit: true, unitName: "children" },
+      { id: "G12",  name: "Childcare / kindergarten / after-school care", nameBM: "Taska / tadika / penjagaan selepas sekolah", cap: 3000, desc: "Registered childcare, kindergarten or care centre fees for children up to age 12", descBM: "Yuran taska, tadika atau pusat jagaan berdaftar untuk kanak-kanak sehingga umur 12 tahun" },
+      { id: "G11",  name: "Breastfeeding equipment",  nameBM: "Peralatan penyusuan",              cap: 1000, desc: "Child aged 2 and below. Once every 2 years", descBM: "Anak berumur 2 tahun dan ke bawah. Sekali setiap 2 tahun" },
+    ]},
+    { id: "housing", name: "Housing", nameBM: "Perumahan", items: [
+      { id: "G22", name: "Housing loan interest (first home)", nameBM: "Faedah pinjaman perumahan (rumah pertama)", cap: 7000, desc: "SPA 2025–2027. RM7k if up to RM500k, RM5k if RM500k–750k", descBM: "SPA 2025–2027. RM7k jika sehingga RM500k, RM5k jika RM500k–750k" },
+    ]},
+    { id: "rental", name: "Rental Income & Expenses", nameBM: "Pendapatan & Perbelanjaan Sewa", items: [
+      { id: "R1", name: "Rental expenses — repairs & maintenance",   nameBM: "Perbelanjaan sewa — pembaikan & penyelenggaraan",   cap: 999999, desc: "Deductible: repairs and maintenance", descBM: "Boleh ditolak: pembaikan dan penyelenggaraan" },
+      { id: "R2", name: "Rental expenses — quit rent & assessment",  nameBM: "Perbelanjaan sewa — cukai tanah & cukai pintu",      cap: 999999, desc: "Deductible: quit rent, assessment tax", descBM: "Boleh ditolak: cukai tanah, cukai pintu" },
+      { id: "R3", name: "Rental expenses — insurance premium",       nameBM: "Perbelanjaan sewa — premium insurans",              cap: 999999, desc: "Deductible: fire/building insurance", descBM: "Boleh ditolak: insurans kebakaran/bangunan" },
+      { id: "R4", name: "Rental expenses — management & agent fees", nameBM: "Perbelanjaan sewa — yuran pengurusan & ejen",       cap: 999999, desc: "Deductible: management fees, agent commission", descBM: "Boleh ditolak: yuran pengurusan, komisyen ejen" },
+      { id: "R5", name: "Rental expenses — loan interest",           nameBM: "Perbelanjaan sewa — faedah pinjaman",              cap: 999999, desc: "Deductible: loan interest on rental property", descBM: "Boleh ditolak: faedah pinjaman untuk hartanah sewa" },
+    ]},
+  ],
 };
 
 // ─────────────────────────────────────────────────────────────
