@@ -93,7 +93,7 @@ G12 - Childcare/Preschool Education Fees: Up to RM3,000
 
 G13 - SSPN Net Savings: Up to RM8,000
 - Net amount deposited (deposits minus withdrawals) in Skim Simpanan Pendidikan Nasional
-- For YA2025 to YA2027
+- Available for YA2026
 - Maximum RM8,000 regardless of number of children
 
 G14 - Spouse/Alimony: Up to RM4,000

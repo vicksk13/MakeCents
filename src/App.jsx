@@ -411,7 +411,7 @@ const THEMES = {
 
 const FONT         = "'DM Sans', -apple-system, system-ui, sans-serif";
 const FONT_DISPLAY = "'DM Serif Display', Georgia, ui-serif, serif"; // ← italic on RM numerals
-const YEARS = ["2025", "2026", "2027"];
+const YEARS = ["2025", "2026"];
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // ─────────────────────────────────────────────────────────────
@@ -493,7 +493,7 @@ const TRANS = {
     total_income:        "Total Income",
     total_relief:        "Total Relief",
     tax_estimate:        "Tax Estimate",
-    using_brackets:      "Using YA2025 brackets — YA2026+ rates not yet gazetted",
+    using_brackets:      "Using YA2025 brackets — YA2026 rates not yet gazetted",
     add_emp_income:      "Add Employment Income",
     employer:            "Employer",
     annual_gross:        "Annual gross income (RM)",
@@ -738,7 +738,7 @@ const TRANS = {
     total_income:        "Jumlah Pendapatan",
     total_relief:        "Jumlah Pelepasan",
     tax_estimate:        "Anggaran Cukai",
-    using_brackets:      "Menggunakan kadar YA2025 — kadar YA2026+ belum diwartakan",
+    using_brackets:      "Menggunakan kadar YA2025 — kadar YA2026 belum diwartakan",
     add_emp_income:      "Tambah Pendapatan Pekerjaan",
     employer:            "Majikan",
     annual_gross:        "Pendapatan kasar tahunan (RM)",
@@ -1139,7 +1139,7 @@ const REL = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// TAX BRACKETS — YA2025 only. Flagged for YA2026/2027.
+// TAX BRACKETS — YA2025 only. Flagged for YA2026.
 // ─────────────────────────────────────────────────────────────
 const BK = [
   { max: 5000,     r: 0,  c: 0      },
