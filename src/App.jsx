@@ -2353,7 +2353,7 @@ export default function MakeCents() {
     <>
       {tab === "relief" && (
         <ReliefTab t={t} L={L} lang={lang} cats={cats} entries={entries}
-          itemEntries={itemEntries} itemTotalRaw={itemTotalRaw}
+          itemEntries={itemEntries} itemTotalRaw={itemTotalRaw} itemTotalCapped={itemTotalCapped}
           onAddEntry={addEntry} onRemoveEntry={removeEntry}
           totalIncome={totalIncome} totalRelief={totalRelief} estTax={estTax} eligibleCapTotal={eligibleCapTotal}
           taxIsTentative={taxIsTentative} ya={ya}
@@ -3211,7 +3211,7 @@ function TabBar({ t, L, tab, setTab }) {
 // ─────────────────────────────────────────────────────────────
 // RELIEF TAB
 // ─────────────────────────────────────────────────────────────
-function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAddEntry, onRemoveEntry, onOpenScanner, totalIncome, totalRelief, estTax, eligibleCapTotal, taxIsTentative, ya, epfFromIncomes, socsoFromIncomes, totalMTDPaid, mtdBalance }) {
+function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemTotalCapped, onAddEntry, onRemoveEntry, onOpenScanner, totalIncome, totalRelief, estTax, eligibleCapTotal, taxIsTentative, ya, epfFromIncomes, socsoFromIncomes, totalMTDPaid, mtdBalance }) {
   const isBM = lang === "ms";
   const n = (item) => isBM ? (item.nameBM || item.name) : item.name;
   const d = (item) => isBM ? (item.descBM || item.desc) : item.desc;
