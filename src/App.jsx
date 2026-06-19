@@ -2992,10 +2992,10 @@ function Header({ t, L, user, ya, setYa, yaOpen, setYaOpen, totalIncome, totalRe
           <span style={{ fontSize: 18 }}>💡</span>
           <div style={{ flex: 1, textAlign: "left" }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
-              {isBM ? "Pelepasan yang Terlepas?" : "Missed Any Reliefs?"}
+              {lang === "ms" ? "Pelepasan yang Terlepas?" : "Missed Any Reliefs?"}
             </div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>
-              {isBM ? "Temukan pelepasan yang anda tidak tuntut" : "Discover unclaimed savings"}
+              {lang === "ms" ? "Temukan pelepasan yang anda tidak tuntut" : "Discover unclaimed savings"}
             </div>
           </div>
           <span style={{ fontSize: 18, opacity: 0.7 }}>→</span>
