@@ -2965,41 +2965,6 @@ function Header({ t, L, user, ya, setYa, yaOpen, setYaOpen, totalIncome, totalRe
             </div>
           );
         })()}
-        {/* Recommendation Button */}
-        <button
-          onClick={handleGenerateRecommendations}
-          style={{
-            width: "100%",
-            background: `linear-gradient(135deg, ${t.red} 0%, ${t.redSoft} 100%)`,
-            border: "none",
-            borderRadius: 16,
-            padding: "16px 18px",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            cursor: "pointer",
-            transition: "transform 0.15s, box-shadow 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = wide ? "translateY(-2px)" : "none";
-            e.currentTarget.style.boxShadow = wide ? "0 8px 24px rgba(184,58,44,0.2)" : "none";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "none";
-          }}
-        >
-          <span style={{ fontSize: 18 }}>💡</span>
-          <div style={{ flex: 1, textAlign: "left" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
-              {lang === "ms" ? "Pelepasan yang Terlepas?" : "Missed Any Reliefs?"}
-            </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>
-              {lang === "ms" ? "Temukan pelepasan yang anda tidak tuntut" : "Discover unclaimed savings"}
-            </div>
-          </div>
-          <span style={{ fontSize: 18, opacity: 0.7 }}>→</span>
-        </button>
         {/* Row: Tax Estimate + Relief Claimed */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           <div style={{ background: t.surface, border: `1px solid ${t.hair}`, borderRadius: 16, padding: "14px 16px" }}>
@@ -3364,10 +3329,50 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
             <div style={{ fontSize: 12, color: t.inkSoft, marginTop: 'auto', paddingTop: 10 }}>RM {totalRelief.toLocaleString()} of RM {totalCap.toLocaleString()} cap</div>
           </div>
         </div>
-        <div style={{ background: t.redSoft, border: `1px solid rgba(184,58,44,0.15)`, borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-          <div style={{width:44,height:44,borderRadius:12,background:t.red,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Icon name="sparkleAi" size={19} color="#fff" /></div>
-          <div style={{flex:1}}><div style={{fontSize:20,fontFamily:FONT,fontWeight:700,lineHeight:1.2}}>{L('scan_banner_title')}</div><div style={{fontSize:13,color:t.inkSoft,marginTop:4}}>{L('scan_banner_sub')}</div></div>
-          <button onClick={() => onOpenScanner(null)} style={{padding:'10px 18px',border:'none',borderRadius:10,background:t.red,color:'#fff',fontWeight:700,cursor:'pointer',flexShrink:0}}>{L('scan_receipt')}</button>
+        {/* 2-Column: Recommendation + Scan Receipt (Desktop) or Stacked (Mobile) */}
+        <div style={{ display: wide ? 'grid' : 'flex', gridTemplateColumns: wide ? '1fr 1fr' : undefined, flexDirection: wide ? undefined : 'column', gap: 14, marginBottom: 16 }}>
+          {/* Left: Recommendation Button */}
+          <button
+            onClick={handleGenerateRecommendations}
+            style={{
+              background: `linear-gradient(135deg, ${t.red} 0%, ${t.redSoft} 100%)`,
+              border: "none",
+              borderRadius: 14,
+              padding: "16px 18px",
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              cursor: "pointer",
+              transition: "transform 0.15s, box-shadow 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = wide ? "translateY(-2px)" : "none";
+              e.currentTarget.style.boxShadow = wide ? "0 8px 20px rgba(184,58,44,0.25)" : "none";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <div style={{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.2)",display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <span style={{ fontSize: 22 }}>💡</span>
+            </div>
+            <div style={{flex:1,textAlign:'left'}}>
+              <div style={{fontSize:14,fontFamily:FONT,fontWeight:700,color:'#fff',lineHeight:1.2}}>
+                {lang === "ms" ? "Pelepasan Terlepas?" : "Missed Any Reliefs?"}
+              </div>
+              <div style={{fontSize:12,color:'rgba(255,255,255,0.85)',marginTop:3}}>
+                {lang === "ms" ? "Cari pelepasan tambahan" : "Find additional savings"}
+              </div>
+            </div>
+          </button>
+
+          {/* Right: Scan Receipt */}
+          <div style={{ background: t.redSoft, border: `1px solid rgba(184,58,44,0.15)`, borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{width:44,height:44,borderRadius:12,background:t.red,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Icon name="sparkleAi" size={19} color="#fff" /></div>
+            <div style={{flex:1}}><div style={{fontSize:14,fontFamily:FONT,fontWeight:700,lineHeight:1.2}}>{L('scan_banner_title')}</div><div style={{fontSize:12,color:t.inkSoft,marginTop:4}}>{L('scan_banner_sub')}</div></div>
+            <button onClick={() => onOpenScanner(null)} style={{padding:'10px 18px',border:'none',borderRadius:10,background:t.red,color:'#fff',fontWeight:700,cursor:'pointer',flexShrink:0,whiteSpace:'nowrap'}}>{L('scan_receipt')}</button>
+          </div>
         </div>
       </>}
 
