@@ -1782,21 +1782,6 @@ export default function MakeCents() {
   const cats     = useMemo(() => (REL[ya] || REL["2025"]).map(c => ({ ...c, icon: CAT_ICON[c.id] || "sparkle" })), [ya]);
   const allItems = useMemo(() => cats.flatMap(c => c.items), [cats]);
 
-  // ── Recommendation engine ────────────────────────────────────────────────────
-  const { generateRecommendations } = useRecommendationEngine(REL, ya, itemTotalRaw, allItems);
-
-  const handleGenerateRecommendations = () => {
-    const recs = generateRecommendations();
-    setRecommendations(recs);
-    setShowRecommendations(true);
-  };
-
-  const handleAddClaimFromRecommendation = (reliefId) => {
-    setShowRecommendations(false);
-    setTab("relief");
-    // Scroll to the relief item (optional - can be enhanced)
-  };
-
   // ── EPF / SOCSO from income records (for auto-linking into relief) ──────────
   // These aggregate all employment income records' E1/E2 fields.
   // They serve as the G17epf / G20 value when the user has no manual entries.
@@ -1885,6 +1870,20 @@ export default function MakeCents() {
   // mtdBalance > 0 = still owe, < 0 = refund due.
   const totalMTDPaid  = incomes.reduce((s, i) => s + (i.mtdPaid || 0), 0) + cp500FromIncomes;
   const mtdBalance    = Math.round(estTax - totalMTDPaid);
+
+  // ── Recommendation engine ────────────────────────────────────
+  const { generateRecommendations } = useRecommendationEngine(REL, ya, itemTotalRaw, allItems);
+
+  const handleGenerateRecommendations = () => {
+    const recs = generateRecommendations();
+    setRecommendations(recs);
+    setShowRecommendations(true);
+  };
+
+  const handleAddClaimFromRecommendation = (reliefId) => {
+    setShowRecommendations(false);
+    setTab("relief");
+  };
 
   // ── Entry mutations ───────────────────────────────────────
   const addEntry = async (itemId, amount, desc, units = 1, hasReceipt = false, receiptImg = null) => {
