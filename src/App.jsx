@@ -2378,7 +2378,8 @@ export default function MakeCents() {
           taxIsTentative={taxIsTentative} ya={ya}
           epfFromIncomes={epfFromIncomes} socsoFromIncomes={socsoFromIncomes}
           totalMTDPaid={totalMTDPaid} mtdBalance={mtdBalance}
-          onOpenScanner={(item) => { setScannerSeed(item); setScannerOpen(true); }} />
+          onOpenScanner={(item) => { setScannerSeed(item); setScannerOpen(true); }}
+          onGenerateRecommendations={handleGenerateRecommendations} />
       )}
       {tab === "income" && (
         <IncomeTab t={t} L={L} ya={ya} incomes={incomes} rentalIncomes={rentalIncomes}
@@ -3241,7 +3242,7 @@ function TabBar({ t, L, tab, setTab }) {
 // ─────────────────────────────────────────────────────────────
 // RELIEF TAB
 // ─────────────────────────────────────────────────────────────
-function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemTotalCapped, onAddEntry, onRemoveEntry, onOpenScanner, totalIncome, totalRelief, estTax, eligibleCapTotal, taxIsTentative, ya, epfFromIncomes, socsoFromIncomes, totalMTDPaid, mtdBalance }) {
+function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemTotalCapped, onAddEntry, onRemoveEntry, onOpenScanner, totalIncome, totalRelief, estTax, eligibleCapTotal, taxIsTentative, ya, epfFromIncomes, socsoFromIncomes, totalMTDPaid, mtdBalance, onGenerateRecommendations }) {
   const isBM = lang === "ms";
   const n = (item) => isBM ? (item.nameBM || item.name) : item.name;
   const d = (item) => isBM ? (item.descBM || item.desc) : item.desc;
@@ -3333,7 +3334,7 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
         <div style={{ display: wide ? 'grid' : 'flex', gridTemplateColumns: wide ? '1fr 1fr' : undefined, flexDirection: wide ? undefined : 'column', gap: 14, marginBottom: 16 }}>
           {/* Left: Recommendation Button */}
           <button
-            onClick={handleGenerateRecommendations}
+            onClick={onGenerateRecommendations}
             style={{
               background: `linear-gradient(135deg, ${t.red} 0%, ${t.redSoft} 100%)`,
               border: "none",
