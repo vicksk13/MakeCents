@@ -3351,7 +3351,17 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
           </button>
           {expanded && <div style={{borderTop:`1px solid ${t.hair}`,padding: wide ? '12px 14px 14px' : '8px 12px 12px',display: wide ? 'grid' : 'flex',gridTemplateColumns: wide ? 'repeat(4,minmax(0,1fr))' : undefined,flexDirection: wide ? undefined : 'column',gap: wide ? 10 : 8}}>
             {cat.items.map(item=>{
-              const eItems=itemEntries(item.id); const raw=itemTotalRaw(item.id); const units=eItems[0]?.units||1; const capEff=item.cap>=999999?raw||1:(item.perUnit?item.cap*units:item.cap); const claimedAmt=item.auto?item.cap:Math.min(raw,capEff); const pct=item.cap>=999999?100:Math.round((claimedAmt/Math.max(1,capEff))*100);
+              const eItems=itemEntries(item.id); const raw=itemTotalRaw(item.id); const units=eItems[0]?.units||1;
+              // capTheo = theoretical cap (for user knowledge)
+              const capTheo = item.cap>=999999 ? raw||1 : (item.perUnit ? item.cap*units : item.cap);
+              // capEnforced = actual enforced cap (accounting for shared caps like G6+G7+G8)
+              const capEnforced = item.auto ? item.cap : itemTotalCapped(item.id);
+              // claimedAmt = what's actually allowed (enforced cap applied)
+              const claimedAmt = item.auto ? item.cap : Math.min(raw, capEnforced);
+              // pct = percentage of enforced cap (for visual accuracy)
+              const pct = item.cap>=999999 ? 100 : Math.round((claimedAmt / Math.max(1, capEnforced)) * 100);
+              // isSharedCap = show warning for items that participate in shared caps
+              const isSharedCap = (item.id === "G6" || item.id === "G7" || item.id === "G8" || item.id === "G17ins" || item.id === "G17epf");
               if (!wide) {
                 // ── MOBILE: horizontal row layout ──
                 const isAutoLinked = (item.id === "G17epf" && eItems.length === 0 && epfFromIncomes > 0)
@@ -3362,11 +3372,12 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
                       <span style={{fontSize:9,fontWeight:600,color:t.inkMute,letterSpacing:'0.05em'}}>{item.id.startsWith("G17") ? "G17" : item.id}</span>
                       {item.auto && <span style={{fontSize:9,fontWeight:700,color:t.red,background:t.redSoft,padding:'2px 6px',borderRadius:6}}>AUTO</span>}
                       {isAutoLinked && <span style={{fontSize:9,fontWeight:700,color:t.gold,background:t.goldSoft,padding:'2px 6px',borderRadius:6}}>FROM EA</span>}
+                      {isSharedCap && <span style={{fontSize:9,fontWeight:700,color:t.red,background:t.redSoft,padding:'2px 6px',borderRadius:6}}>SHARED CAP</span>}
                     </div>
                     <div style={{fontSize:13,fontWeight:600,color:t.ink,lineHeight:1.3,marginBottom:2}}>{n(item)}</div>
                     <div style={{fontSize:11,color:t.inkMute,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{d(item)}</div>
                     <div style={{height:3,background:t.bgAlt,borderRadius:3,marginTop:8}}><div style={{width:`${Math.min(100,pct)}%`,height:'100%',background:item.auto?t.red:isAutoLinked?t.gold:t.red,borderRadius:3}}/></div>
-                    <div style={{fontSize:10,color:t.inkMute,marginTop:4}}>RM {claimedAmt.toLocaleString()} of RM {capEff.toLocaleString()}</div>
+                    <div style={{fontSize:10,color:t.inkMute,marginTop:4}}>RM {claimedAmt.toLocaleString()} of RM {capEnforced.toLocaleString()}{capEnforced !== capTheo && !item.auto ? ` (limit: RM${capTheo.toLocaleString()})` : ""}</div>
                     {isAutoLinked && <div style={{fontSize:10,color:t.gold,marginTop:2}}>Auto-linked from your EA form · add manual entries to override</div>}
                   </div>
                   <div style={{flexShrink:0,textAlign:'right'}}>
@@ -3388,12 +3399,13 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
                 <div style={{display:'flex',alignItems:'baseline',gap:4,marginBottom:8}}>
                   <span style={{fontSize:9,fontWeight:600,color:t.inkMute,letterSpacing:'0.05em'}}>{item.id.startsWith("G17") ? "G17" : item.id}</span>
                   {isAutoLinked && <span style={{fontSize:9,fontWeight:700,color:t.gold,background:t.goldSoft,padding:'1px 5px',borderRadius:4}}>FROM EA</span>}
+                  {isSharedCap && <span style={{fontSize:9,fontWeight:700,color:t.red,background:t.redSoft,padding:'1px 5px',borderRadius:4}}>SHARED CAP</span>}
                 </div>
                 <div style={{fontSize:19,fontFamily:FONT,fontWeight:700,lineHeight:1.1,minHeight:42}}>{n(item)}</div>
                 <div style={{fontSize:12,color:t.inkMute,marginTop:6,minHeight:32,overflow:'hidden',textOverflow:'ellipsis',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{d(item)}</div>
                 {isAutoLinked && <div style={{fontSize:11,color:t.gold,marginTop:4,lineHeight:1.4}}>Auto-linked from your EA form. Add manual entries to override.</div>}
                 <div style={{fontFamily:FONT_DISPLAY,fontSize:28,fontStyle:"normal",marginTop:10,lineHeight:1.05}}>RM {claimedAmt.toLocaleString()}</div>
-                <div style={{fontSize:12,color:t.inkMute,marginTop:2,textAlign:'right'}}>of RM {capEff.toLocaleString()}</div>
+                <div style={{fontSize:12,color:t.inkMute,marginTop:2,textAlign:'right'}}>of RM {capEnforced.toLocaleString()}{capEnforced !== capTheo && !item.auto ? ` (limit: RM${capTheo.toLocaleString()})` : ""}</div>
                 <div style={{height:4,background:t.bgAlt,borderRadius:4,marginTop:10,marginBottom:12}}><div style={{width:`${Math.min(100,pct)}%`,height:'100%',background:item.auto?t.red:isAutoLinked?t.gold:t.red,borderRadius:4}}/></div>
                 <div style={{marginTop:'auto',paddingTop:8,display:'flex',justifyContent:'space-between',alignItems:'center',minHeight:34,fontSize:11,color:t.inkMute,borderTop:`1px solid ${t.hair}`,opacity:hoveredCard===item.id||eItems.length>0?1:0,transition:'opacity 0.15s'}}>
                   <span>{eItems.length?`${eItems.length} entr`+(eItems.length>1?'ies':'y'):isAutoLinked?'From income':'No entries yet'}</span>
