@@ -1113,7 +1113,8 @@ const REL = {
 // ─────────────────────────────────────────────────────────────
 // TAX BRACKETS — YA2025 only. Flagged for YA2026/2027.
 // ─────────────────────────────────────────────────────────────
-const BK = [
+// Tax brackets by year (YA2025 & YA2026 currently identical per official LHDN schedule)
+const BK_2025 = [
   { max: 5000,     r: 0,  c: 0      },
   { max: 20000,    r: 1,  c: 0      },
   { max: 35000,    r: 3,  c: 150    },
@@ -1125,8 +1126,29 @@ const BK = [
   { max: 2000000,  r: 28, c: 136400 },
   { max: Infinity, r: 30, c: 528400 },
 ];
-const calcTax = (ci) => {
+const BK_2026 = [
+  { max: 5000,     r: 0,  c: 0      },
+  { max: 20000,    r: 1,  c: 0      },
+  { max: 35000,    r: 3,  c: 150    },
+  { max: 50000,    r: 6,  c: 600    },
+  { max: 70000,    r: 11, c: 1500   },
+  { max: 100000,   r: 19, c: 3700   },
+  { max: 400000,   r: 25, c: 9400   },
+  { max: 600000,   r: 26, c: 84400  },
+  { max: 2000000,  r: 28, c: 136400 },
+  { max: Infinity, r: 30, c: 528400 },
+];
+const BK_2027 = BK_2026; // Use 2026 brackets for 2027 unless specified otherwise
+
+const getBrackets = (year) => {
+  if (year === "2026") return BK_2026;
+  if (year === "2027") return BK_2027;
+  return BK_2025; // Default to 2025 for unknown years
+};
+
+const calcTax = (ci, year = "2025") => {
   if (ci <= 0) return 0;
+  const BK = getBrackets(year);
   let prev = 0;
   for (const b of BK) {
     if (ci <= b.max) return b.c + (ci - prev) * b.r / 100;
@@ -1833,9 +1855,9 @@ export default function MakeCents() {
   const totalEmploymentIncome = incomes.reduce((s, i) => s + (i.amount || 0), 0);
   const totalIncome           = totalEmploymentIncome + netRentalIncome;
   const chargeable            = Math.max(0, totalIncome - totalRelief);
-  // Tax estimate only confirmed for YA2025; flagged for other years
-  const estTax      = calcTax(chargeable);
-  const taxIsTentative = ya !== "2025";
+  // Tax estimate uses year-specific brackets
+  const estTax      = calcTax(chargeable, ya);
+  const taxIsTentative = ya !== "2025" && ya !== "2026";
 
   // ── MTD / PCB balance ─────────────────────────────────────
   // totalMTDPaid sums D1 from all employment income records.
@@ -3287,14 +3309,14 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
 
 
       {cats.map(cat => {
-        const fixedCaps = { personal: 26000, medical: 24000, lifestyle: 6000, insurance: 14350, education: 15000, housing: 7000 };
-        const medGroup = Math.min(Math.min(itemTotalRaw("G6"),10000) + Math.min(itemTotalRaw("G7"),1000) + Math.min(itemTotalRaw("G8"),6000), 10000);
+        const fixedCaps = { personal: 21000, medical: 24000, lifestyle: 7000, insurance: 14350, education: 15000, children: 24000, housing: 7000 };
+        const medGroup = Math.min(Math.min(itemTotalRaw("G6"),10000) + Math.min(itemTotalRaw("G7"),1000) + Math.min(itemTotalRaw("G8"),g8SubLimit), 10000);
         const claimed = cat.id === "medical"
           ? Math.min(itemTotalRaw("G2"),8000) + Math.min(itemTotalRaw("G3"),6000) + medGroup
           : cat.id === "insurance"
             ? Math.min(Math.min(itemTotalRaw("G17ins"),3000)+Math.min(itemTotalRaw("G17epf"),4000),7000) + Math.min(itemTotalRaw("G18"),3000)+Math.min(itemTotalRaw("G19"),4000)+Math.min(itemTotalRaw("G20"),350)
             : cat.id === "lifestyle"
-              ? Math.min(itemTotalRaw("G9"),2500)+Math.min(itemTotalRaw("G10"),1000)+Math.min(itemTotalRaw("G21"),2500)
+              ? Math.min(itemTotalRaw("G9"),2500)+Math.min(itemTotalRaw("G10"),1000)+Math.min(itemTotalRaw("G21"),2500)+Math.min(itemTotalRaw("VMY"),1000)
               : cat.items.reduce((s,i)=> s + (i.auto?i.cap:Math.min(itemTotalRaw(i.id), i.cap>=999999?itemTotalRaw(i.id):(i.perUnit ? i.cap * (itemEntries(i.id)[0]?.units || 1) : i.cap))),0);
         const cap = fixedCaps[cat.id] ?? cat.items.reduce((s,i)=> s + (i.cap>=999999?0:i.cap),0);
         const util = cap ? Math.round((claimed/cap)*100) : 0;
