@@ -3309,6 +3309,7 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, onAdd
 
 
       {cats.map(cat => {
+        const g8SubLimit = ya === "2026" || ya === "2027" ? 10000 : 6000;
         const fixedCaps = { personal: 21000, medical: 24000, lifestyle: 7000, insurance: 14350, education: 15000, children: 24000, housing: 7000 };
         const medGroup = Math.min(Math.min(itemTotalRaw("G6"),10000) + Math.min(itemTotalRaw("G7"),1000) + Math.min(itemTotalRaw("G8"),g8SubLimit), 10000);
         const claimed = cat.id === "medical"
@@ -4268,18 +4269,10 @@ function EFilingSummaryModal({
   const totalInc       = totalEmpIncome + (netRentalIncome || 0);
 
   // ── Tax breakdown ─────────────────────────────────────────
-  const BRACKETS = [
-    { max: 5000,     prev: 0,       r: 0,  c: 0      },
-    { max: 20000,    prev: 5000,    r: 1,  c: 0      },
-    { max: 35000,    prev: 20000,   r: 3,  c: 150    },
-    { max: 50000,    prev: 35000,   r: 6,  c: 600    },
-    { max: 70000,    prev: 50000,   r: 11, c: 1500   },
-    { max: 100000,   prev: 70000,   r: 19, c: 3700   },
-    { max: 400000,   prev: 100000,  r: 25, c: 9400   },
-    { max: 600000,   prev: 400000,  r: 26, c: 84400  },
-    { max: 2000000,  prev: 600000,  r: 28, c: 136400 },
-    { max: Infinity, prev: 2000000, r: 30, c: 528400 },
-  ];
+  const BRACKETS = getBrackets(ya).map((b, i, arr) => ({
+    ...b,
+    prev: i === 0 ? 0 : arr[i-1].max
+  }));
   const taxBreakdown = (ci) => {
     if (ci <= 0) return { firstAmt: 0, firstTax: 0, balanceAmt: 0, rate: 0, balanceTax: 0, total: 0 };
     for (const b of BRACKETS) {
@@ -4306,19 +4299,25 @@ function EFilingSummaryModal({
   const now     = new Date();
   const dateStr = now.toLocaleDateString(isBM ? "ms-MY" : "en-MY", { year: "numeric", month: "long", day: "numeric" });
 
-  // ── Relief rows (exact LHDN labels) ──────────────────────
+  // ── Helper: lookup relief item cap from REL[ya] ──────────────────────
+  const getReliefsItemCap = (itemId) => {
+    const item = (REL[ya] || REL["2025"])?.flatMap(c => c.items).find(i => i.id === itemId);
+    return item?.cap || 0;
+  };
+
+  // ── Relief rows (exact LHDN labels) — dynamically from REL[ya] ──────────────────────
   const reliefRows = [
     { label: isBM ? "Individu dan saudara mara tanggungan" : "Individual and dependent relatives", amount: 9000, auto: true },
-    { label: isBM ? "Perbelanjaan untuk ibu bapa atau datuk nenek" : "Expenses for parents or grandparents", amount: Math.min(itemTotalRaw("G2"), 8000) },
-    { label: isBM ? "Alat sokongan asas untuk diri sendiri, pasangan, anak atau ibu bapa yang cacat" : "Basic supporting equipment for disabled self, spouse, child or parent", amount: Math.min(itemTotalRaw("G3"), 6000) },
-    { label: isBM ? "Individu kurang upaya" : "Disabled individual", amount: Math.min(itemTotalRaw("G4"), 7000) },
-    { label: isBM ? "Yuran pendidikan (Diri sendiri)" : "Education fees (Self)", amount: Math.min(itemTotalRaw("G11"), 7000) },
+    { label: isBM ? "Perbelanjaan untuk ibu bapa atau datuk nenek" : "Expenses for parents or grandparents", amount: Math.min(itemTotalRaw("G2"), getReliefsItemCap("G2")) },
+    { label: isBM ? "Alat sokongan asas untuk diri sendiri, pasangan, anak atau ibu bapa yang cacat" : "Basic supporting equipment for disabled self, spouse, child or parent", amount: Math.min(itemTotalRaw("G3"), getReliefsItemCap("G3")) },
+    { label: isBM ? "Individu kurang upaya" : "Disabled individual", amount: Math.min(itemTotalRaw("G4"), getReliefsItemCap("G4")) },
+    { label: isBM ? "Yuran pendidikan (Diri sendiri)" : "Education fees (Self)", amount: Math.min(itemTotalRaw("G5"), getReliefsItemCap("G5")) },
     { label: isBM ? "Perbelanjaan perubatan — penyakit serius / kesuburan / vaksinasi / pergigian" : "Medical expenses — serious disease / fertility / vaccination / dental", amount: groupCapped.med678, note: isBM ? "Had gabungan G6+G7+G8: RM10,000" : "Combined cap G6+G7+G8: RM10,000" },
     { label: isBM ? "Gaya Hidup — Perbelanjaan untuk kegunaan / manfaat diri sendiri, pasangan atau anak" : "Lifestyle — Expenses for the use / benefit of self, spouse or child", amount: groupCapped.g9, note: isBM ? "Had: RM2,500" : "Cap: RM2,500" },
     { label: isBM ? "Gaya Hidup — Peralatan / kemudahan sukan" : "Lifestyle — Sports & fitness equipment / facilities", amount: groupCapped.g10, note: isBM ? "Had: RM1,000" : "Cap: RM1,000" },
-    { label: isBM ? "Yuran penjagaan kanak-kanak (pusat penjagaan berdaftar / tadika)" : "Child care fees to a registered child care centre / kindergarten", amount: Math.min(itemTotalRaw("G12"), 3000) },
-    { label: isBM ? "Suami / isteri / bayaran nafkah kepada bekas isteri" : "Husband / wife / payment of alimony to former wife", amount: Math.min(itemTotalRaw("G14"), 4000) },
-    { label: isBM ? "Pasangan kurang upaya" : "Disabled spouse", amount: Math.min(itemTotalRaw("G15"), 6000) },
+    { label: isBM ? "Yuran penjagaan kanak-kanak (pusat penjagaan berdaftar / tadika)" : "Child care fees to a registered child care centre / kindergarten", amount: Math.min(itemTotalRaw("G12"), getReliefsItemCap("G12")) },
+    { label: isBM ? "Suami / isteri / bayaran nafkah kepada bekas isteri" : "Husband / wife / payment of alimony to former wife", amount: Math.min(itemTotalRaw("G14"), getReliefsItemCap("G14")) },
+    ...(getReliefsItemCap("G15") > 0 ? [{ label: isBM ? "Pasangan kurang upaya" : "Disabled spouse", amount: Math.min(itemTotalRaw("G15"), getReliefsItemCap("G15")) }] : []),
     {
       label: isBM ? "Insurans hayat dan KWSP" : "Life insurance and EPF",
       amount: g17combined,
@@ -4328,10 +4327,10 @@ function EFilingSummaryModal({
         { label: isBM ? "  · Caruman KWSP (Sukarela atau Wajib) / skim diluluskan" : "  · Contribution to EPF (voluntary or compulsory) / approved scheme", amount: g17epf, note: "RM4,000" },
       ],
     },
-    { label: isBM ? "Skim persaraan swasta dan anuiti tertunda" : "Private retirement scheme and deferred annuity", amount: Math.min(itemTotalRaw("G18"), 3000) },
-    { label: isBM ? "Insurans pendidikan dan perubatan untuk diri sendiri, pasangan atau anak" : "Education and medical insurance for self, spouse or child", amount: Math.min(itemTotalRaw("G19"), 4000) },
-    { label: isBM ? "Caruman kepada PERKESO (SOCSO) / EIS" : "Contribution to SOCSO / EIS", amount: Math.min(itemTotalRaw("G20"), 350) },
-    { label: isBM ? "Kemudahan pengecasan kenderaan elektrik / mesin kompos sisa makanan" : "EV charging facility / food waste compost machine", amount: groupCapped.g21 },
+    { label: isBM ? "Skim persaraan swasta dan anuiti tertunda" : "Private retirement scheme and deferred annuity", amount: Math.min(itemTotalRaw("G18"), getReliefsItemCap("G18")) },
+    { label: isBM ? "Insurans pendidikan dan perubatan untuk diri sendiri, pasangan atau anak" : "Education and medical insurance for self, spouse or child", amount: Math.min(itemTotalRaw("G19"), getReliefsItemCap("G19")) },
+    { label: isBM ? "Caruman kepada PERKESO (SOCSO) / EIS" : "Contribution to SOCSO / EIS", amount: Math.min(itemTotalRaw("G20"), getReliefsItemCap("G20")) },
+    { label: isBM ? "Kemudahan pengecasan kenderaan elektrik / mesin kompos sisa makanan / penggiling sisa" : "EV charging facility / food waste compost machine / grinder", amount: groupCapped.g21 },
     { label: isBM ? "Faedah pinjaman untuk pembelian hartanah kediaman pertama" : "Interest expended for the purchase of the first residential property", amount: groupCapped.g22 },
   ].filter(r => r.amount > 0);
 
