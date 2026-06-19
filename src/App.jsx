@@ -56,6 +56,8 @@ import {
   decryptBlob,
   GUEST_DEVICE_KEY_LS,
 } from "./crypto";
+import { useRecommendationEngine } from "./hooks/useRecommendationEngine";
+import RecommendationModal from "./components/RecommendationModal";
 
 // ─────────────────────────────────────────────────────────────
 // RESPONSIVE HOOK — tracks viewport >= 768px
@@ -1563,6 +1565,9 @@ export default function MakeCents() {
   const [showGuide,     setShowGuide]     = useState(false);
   const [guideDrawer,   setGuideDrawer]   = useState(false);
   const [showEFilingSummary, setShowEFilingSummary] = useState(false);
+  // Recommendation engine
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
 
   // ── AES-256-GCM encryption key ───────────────────────────────────────────
   // Stored in a ref (not state) so it never triggers a re-render and is never
@@ -1776,6 +1781,21 @@ export default function MakeCents() {
   // ── Derived data ──────────────────────────────────────────
   const cats     = useMemo(() => (REL[ya] || REL["2025"]).map(c => ({ ...c, icon: CAT_ICON[c.id] || "sparkle" })), [ya]);
   const allItems = useMemo(() => cats.flatMap(c => c.items), [cats]);
+
+  // ── Recommendation engine ────────────────────────────────────────────────────
+  const { generateRecommendations } = useRecommendationEngine(REL, ya, itemTotalRaw, allItems);
+
+  const handleGenerateRecommendations = () => {
+    const recs = generateRecommendations();
+    setRecommendations(recs);
+    setShowRecommendations(true);
+  };
+
+  const handleAddClaimFromRecommendation = (reliefId) => {
+    setShowRecommendations(false);
+    setTab("relief");
+    // Scroll to the relief item (optional - can be enhanced)
+  };
 
   // ── EPF / SOCSO from income records (for auto-linking into relief) ──────────
   // These aggregate all employment income records' E1/E2 fields.
@@ -2415,6 +2435,17 @@ export default function MakeCents() {
       {showPrivacy && <PrivacyModal t={t} L={L} onClose={() => setShowPrivacy(false)} />}
       {showGuide && <GuideModal t={t} L={L} onClose={() => setShowGuide(false)} />}
       <GuideDrawer t={t} L={L} open={guideDrawer} onClose={() => setGuideDrawer(false)} />
+      <RecommendationModal
+        isOpen={showRecommendations}
+        onClose={() => setShowRecommendations(false)}
+        recommendations={recommendations}
+        onAddClaim={handleAddClaimFromRecommendation}
+        t={t}
+        L={L}
+        isBM={lang === "ms"}
+        theme={t}
+        wide={wide}
+      />
       <ScannerSheet open={scannerOpen} seededItem={scannerSeed} t={t} L={L} ya={ya} allItems={allItems}
         onClose={() => { setScannerOpen(false); setScannerSeed(null); }}
         onAdd={addFromScan} />
@@ -2935,6 +2966,41 @@ function Header({ t, L, user, ya, setYa, yaOpen, setYaOpen, totalIncome, totalRe
             </div>
           );
         })()}
+        {/* Recommendation Button */}
+        <button
+          onClick={handleGenerateRecommendations}
+          style={{
+            width: "100%",
+            background: `linear-gradient(135deg, ${t.red} 0%, ${t.redSoft} 100%)`,
+            border: "none",
+            borderRadius: 16,
+            padding: "16px 18px",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            cursor: "pointer",
+            transition: "transform 0.15s, box-shadow 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = wide ? "translateY(-2px)" : "none";
+            e.currentTarget.style.boxShadow = wide ? "0 8px 24px rgba(184,58,44,0.2)" : "none";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+        >
+          <span style={{ fontSize: 18 }}>💡</span>
+          <div style={{ flex: 1, textAlign: "left" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
+              {isBM ? "Pelepasan yang Terlepas?" : "Missed Any Reliefs?"}
+            </div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>
+              {isBM ? "Temukan pelepasan yang anda tidak tuntut" : "Discover unclaimed savings"}
+            </div>
+          </div>
+          <span style={{ fontSize: 18, opacity: 0.7 }}>→</span>
+        </button>
         {/* Row: Tax Estimate + Relief Claimed */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           <div style={{ background: t.surface, border: `1px solid ${t.hair}`, borderRadius: 16, padding: "14px 16px" }}>
