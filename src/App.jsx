@@ -413,7 +413,7 @@ const THEMES = {
 
 const FONT         = "'DM Sans', -apple-system, system-ui, sans-serif";
 const FONT_DISPLAY = "'DM Serif Display', Georgia, ui-serif, serif"; // ← italic on RM numerals
-const YEARS = ["2025", "2026", "2027"];
+const YEARS = ["2025", "2026"];
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // ─────────────────────────────────────────────────────────────
@@ -1544,8 +1544,7 @@ export default function MakeCents() {
   const [screen,        setScreen]        = useState("welcome");
   const [nameIn,        setNameIn]        = useState("");
   const [yobIn,         setYobIn]         = useState("");
-  const [ya,            setYa]            = useState("2025");
-  const [yaOpen,        setYaOpen]        = useState(false);
+  const [ya,            setYa]            = useState("2026");
   const [tab,           setTab]           = useState("income");
   const [entries,       setEntries]       = useState([]);
   const [receipts,      setReceipts]      = useState([]);
@@ -2508,25 +2507,38 @@ export default function MakeCents() {
             </div>
           </div>
 
-          {/* YA selector — Lovable pill tabs */}
+          {/* YA selector — Dropdown */}
           <div>
             <div style={{ fontSize: "0.625rem", fontWeight: 700, color: t.inkMute, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 8 }}>
               Year of Assessment
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, background: t.bgAlt, borderRadius: 14, padding: 4 }}>
+            <select
+              value={ya}
+              onChange={(e) => setYa(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                border: `1px solid ${t.hairStrong}`,
+                borderRadius: 10,
+                background: t.surface,
+                color: t.ink,
+                fontSize: 13,
+                fontWeight: 600,
+                fontFamily: FONT,
+                cursor: "pointer",
+                appearance: "none",
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='${encodeURIComponent(t.inkMute)}' d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 8px center",
+                paddingRight: "28px",
+              }}
+            >
               {YEARS.map(y => (
-                <button key={y} onClick={() => setYa(y)}
-                  style={{
-                    padding: "7px 4px", border: "none", borderRadius: 10, cursor: "pointer", fontFamily: FONT,
-                    fontSize: 11, fontWeight: 600, transition: "background 0.15s, color 0.15s",
-                    background: y === ya ? t.ink    : "transparent",
-                    color:      y === ya ? t.bg     : t.inkMute,
-                    boxShadow:  y === ya ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
-                  }}>
+                <option key={y} value={y}>
                   {y}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
           {/* Nav links */}
@@ -2599,7 +2611,7 @@ export default function MakeCents() {
       {overlays}
 
       {tab === "relief" ? (
-        <Header t={t} L={L} user={user} ya={ya} setYa={setYa} yaOpen={yaOpen} setYaOpen={setYaOpen}
+        <Header t={t} L={L} user={user} ya={ya} setYa={setYa}
           totalIncome={totalIncome} totalRelief={totalRelief} chargeable={chargeable}
           estTax={estTax} taxIsTentative={taxIsTentative} eligibleCapTotal={eligibleCapTotal}
           totalMTDPaid={totalMTDPaid} mtdBalance={mtdBalance}
@@ -2895,7 +2907,7 @@ function Signup({ t, L, name, setName, yob, setYob, onDone, onSkip }) {
 // ─────────────────────────────────────────────────────────────
 // HEADER
 // ─────────────────────────────────────────────────────────────
-function Header({ t, L, user, ya, setYa, yaOpen, setYaOpen, totalIncome, totalRelief, chargeable, estTax, taxIsTentative, eligibleCapTotal, totalMTDPaid, mtdBalance, onHowItWorks }) {
+function Header({ t, L, user, ya, setYa, totalIncome, totalRelief, chargeable, estTax, taxIsTentative, eligibleCapTotal, totalMTDPaid, mtdBalance, onHowItWorks }) {
   return (
     <div style={{ background: t.bg, padding: "18px 20px 22px", fontFamily: FONT }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2923,19 +2935,32 @@ function Header({ t, L, user, ya, setYa, yaOpen, setYaOpen, totalIncome, totalRe
             {L("guide_how")}
           </button>
           <div style={{ position: "relative" }}>
-            <button onClick={() => setYaOpen(!yaOpen)} style={{ padding: "8px 12px", border: `1px solid ${t.hairStrong}`, borderRadius: 10, background: t.surface, color: t.ink, fontSize: 12, fontWeight: 600, fontFamily: FONT, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-              YA{ya} <Icon name="chevD" size={12} color={t.inkMute} />
-            </button>
-            {yaOpen && (
-              <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, background: t.surface, borderRadius: 12, border: `1px solid ${t.hair}`, boxShadow: t.shadowHi, overflow: "hidden", zIndex: 50, minWidth: 100 }}>
-                {YEARS.map(y => (
-                  <button key={y} onClick={() => { setYa(y); setYaOpen(false); }}
-                    style={{ display: "block", width: "100%", padding: "11px 16px", border: "none", background: y === ya ? t.redSoft : "transparent", color: y === ya ? t.red : t.ink, fontSize: 13, fontWeight: y === ya ? 600 : 500, fontFamily: FONT, cursor: "pointer", textAlign: "left" }}>
-                    YA{y}
-                  </button>
-                ))}
-              </div>
-            )}
+            <select
+              value={ya}
+              onChange={(e) => setYa(e.target.value)}
+              style={{
+                padding: "8px 12px",
+                border: `1px solid ${t.hairStrong}`,
+                borderRadius: 10,
+                background: t.surface,
+                color: t.ink,
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: FONT,
+                cursor: "pointer",
+                appearance: "none",
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='${encodeURIComponent(t.inkMute)}' d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 8px center",
+                paddingRight: "28px",
+              }}
+            >
+              {YEARS.map(y => (
+                <option key={y} value={y}>
+                  YA{y}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -3292,7 +3317,7 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
         <div style={{ fontSize: 50, fontWeight: 700, color: t.ink, letterSpacing: -0.8, lineHeight: 1.04, fontFamily: FONT, marginBottom: 6 }}>{L('relief_overview')}</div>
         <div style={{ fontSize: 14, color: t.inkSoft, marginBottom: 18 }}>{L('relief_overview_sub')}</div>
         {/* ── 3-card KPI row ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14, alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 16, alignItems: 'stretch' }}>
           {/* Card 1 — YOUR REFUND (hero, conditional state) */}
           {(() => {
             const noIncome   = totalIncome <= 0;
@@ -3330,8 +3355,11 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
             <div style={{ fontSize: 12, color: t.inkSoft, marginTop: 'auto', paddingTop: 10 }}>RM {totalRelief.toLocaleString()} of RM {totalCap.toLocaleString()} cap</div>
           </div>
         </div>
-        {/* 2-Column: Recommendation + Scan Receipt (Desktop) or Stacked (Mobile) */}
-        <div style={{ display: wide ? 'grid' : 'flex', gridTemplateColumns: wide ? '1fr 1fr' : undefined, flexDirection: wide ? undefined : 'column', gap: 14, marginBottom: 16 }}>
+      </>}
+
+      {/* 2-Column: Recommendation + Scan Receipt (Desktop only) or Recommendation Only (Mobile) */}
+      {wide ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
           {/* Left: Recommendation Button */}
           <button
             onClick={onGenerateRecommendations}
@@ -3347,8 +3375,8 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
               transition: "transform 0.15s, box-shadow 0.15s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = wide ? "translateY(-2px)" : "none";
-              e.currentTarget.style.boxShadow = wide ? "0 8px 20px rgba(184,58,44,0.25)" : "none";
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 20px rgba(184,58,44,0.25)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
@@ -3375,7 +3403,35 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
             <button onClick={() => onOpenScanner(null)} style={{padding:'10px 18px',border:'none',borderRadius:10,background:t.red,color:'#fff',fontWeight:700,cursor:'pointer',flexShrink:0,whiteSpace:'nowrap'}}>{L('scan_receipt')}</button>
           </div>
         </div>
-      </>}
+      ) : (
+        <button
+          onClick={onGenerateRecommendations}
+          style={{
+            background: `linear-gradient(135deg, ${t.red} 0%, ${t.redSoft} 100%)`,
+            border: "none",
+            borderRadius: 14,
+            padding: "12px 14px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            cursor: "pointer",
+            marginBottom: 16,
+            width: "100%",
+          }}
+        >
+          <div style={{width:36,height:36,borderRadius:10,background:"rgba(255,255,255,0.2)",display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <span style={{ fontSize: 20 }}>💡</span>
+          </div>
+          <div style={{flex:1,textAlign:'left'}}>
+            <div style={{fontSize:13,fontFamily:FONT,fontWeight:700,color:'#fff',lineHeight:1.1}}>
+              {lang === "ms" ? "Pelepasan Terlepas?" : "Missed Any Reliefs?"}
+            </div>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.85)',marginTop:2}}>
+              {lang === "ms" ? "Cari pelepasan tambahan" : "Find savings"}
+            </div>
+          </div>
+        </button>
+      )}
 
 
 
@@ -3393,7 +3449,7 @@ function ReliefTab({ t, L, lang, cats, entries, itemEntries, itemTotalRaw, itemT
         const cap = fixedCaps[cat.id] ?? cat.items.reduce((s,i)=> s + (i.cap>=999999?0:i.cap),0);
         const util = cap ? Math.round((claimed/cap)*100) : 0;
         const expanded = openCats.has(cat.id);
-        return <div key={cat.id} style={{background:t.surface,border:`1px solid ${t.hair}`,borderRadius:14,marginBottom:10,overflow:'hidden'}}>
+        return <div key={cat.id} style={{background:t.surface,border:`1px solid ${t.hair}`,borderRadius:14,marginBottom:12,overflow:'hidden'}}>
           <button onClick={()=>toggleCat(cat.id)} style={{width:'100%',background:'transparent',border:'none',padding: wide ? '14px 16px' : '12px 14px',display:'flex',alignItems:'center',cursor:'pointer'}}>
             <div style={{width:36,height:36,borderRadius:10,background:t.redSoft,display:'flex',alignItems:'center',justifyContent:'center',marginRight:10,flexShrink:0}}><Icon name={cat.icon} size={16} color={t.red}/></div>
             <div style={{flex:1,textAlign:'left',minWidth:0}}>
@@ -5139,6 +5195,12 @@ function ScannerSheet({ open, onClose, onAdd, seededItem, t, L, ya, allItems }) 
     e.target.value = "";
     setErr(null);
 
+    // Block receipts for 2025 (filing closed)
+    if (ya === "2025") {
+      setErr("YA2025 filing is closed. Please switch to YA2026 to continue scanning receipts.");
+      return;
+    }
+
     // [Priority 3] Validate size and MIME type before any memory allocation
     const check = validateReceiptFile(f);
     if (!check.ok) { setErr(check.error); return; }
@@ -5170,7 +5232,9 @@ function ScannerSheet({ open, onClose, onAdd, seededItem, t, L, ya, allItems }) 
     setStep("analyzing");
     setErr(null);
 
-    const list = allItems
+    // Receipt scanner validates against the SELECTED year's rules
+    const list = REL[ya]
+      .flatMap(cat => cat.items)
       .filter(i => !i.auto && i.cap < 999999)
       .map(i => `${i.id}: ${i.name} (cap RM${i.cap}) - ${i.desc}`)
       .join("\n");
